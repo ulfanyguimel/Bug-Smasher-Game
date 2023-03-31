@@ -1,0 +1,161 @@
+// Get the canvas element and its 2D context
+const canvas = document.getElementById("gameCanvas");
+canvas.width = 800;
+canvas.height = 500;
+const ctx = canvas.getContext("2d");
+
+// Set up the bug object
+let bug = {
+x: canvas.width / 2,
+y: canvas.height / 2,
+size: 64,
+speed: 5,
+interval: 1000,
+timer: null
+};
+
+// Set up the score variable
+let score = 0;
+
+// Function to load the bug image
+function loadBug() {
+const img = new Image();
+img.src = "bug.png";
+img.onload = () => {
+bug.image = img;
+drawBug();
+};
+}
+
+// Function to draw the bug on the canvas
+function drawBug() {
+ctx.drawImage(bug.image, bug.x - bug.size / 2, bug.y - bug.size / 2, bug.size, bug.size);
+}
+
+// Function to move the bug randomly within the canvas
+function moveBug() {
+bug.x += (Math.random() * 2 - 1) * bug.speed;
+bug.y += (Math.random() * 2 - 1) * bug.speed;
+
+// Keep the bug within the canvas
+if (bug.x < bug.size / 2) {
+bug.x = bug.size / 2;
+} else if (bug.x > canvas.width - bug.size / 2) {
+bug.x = canvas.width - bug.size / 2;
+}
+if (bug.y < bug.size / 2) {
+bug.y = bug.size / 2;
+} else if (bug.y > canvas.height - bug.size / 2) {
+bug.y = canvas.height - bug.size / 2;
+}
+
+// Redraw the canvas with the updated bug position
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+drawBug();
+}
+
+// Function to start the bug moving
+function startBug() {
+bug.timer = setInterval(moveBug, bug.interval);
+}
+
+// Function to stop the bug moving
+function stopBug() {
+clearInterval(bug.timer);
+}
+
+// Function to reset the score to zero
+function resetScore() {
+score = 0;
+document.getElementById("score").innerHTML = score;
+}
+
+// Function to reset the bug's speed to its initial value
+function resetSpeed() {
+bug.speed = 5;
+bug.interval = 1000;
+stopBug();
+startBug();
+}
+
+// Function to update the bug speed and hopping interval
+function updateBug() {
+score++;
+document.getElementById("score").innerHTML = score;
+
+// Increment the bug speed and decrement the hopping interval
+bug.interval -= 50;
+if (bug.interval < 100) {
+bug.interval = 100;
+}
+bug.speed += 1;
+
+// Stop and restart the bug with the new speed and hopping interval
+stopBug();
+startBug();
+}
+
+// Function to handle a click event on the canvas
+function handleClick(event) {
+// Get the position of the click relative to the canvas
+const rect = canvas.getBoundingClientRect();
+const x = event.clientX - rect.left;
+const y = event.clientY - rect.top;
+
+// Check if the click is within the bounds of the bug
+const dx = x - bug.x;
+const dy = y - bug.y;
+const distance = Math.sqrt(dx ** 2 + dy ** 2);
+if (distance <= bug.size / 2) {
+updateBug();
+}
+}
+// Set up event listeners for the Reset Score and Reset Speed buttons
+document.getElementById("resetScoreBtn").addEventListener("click", resetScore);
+document.getElementById("resetSpeedBtn").addEventListener("click", resetSpeed);
+
+// Load the bug image and start the game
+loadBug();
+startBug();
+
+// Function to update the bug speed and hopping interval
+function updateBug() {
+score++;
+document.getElementById("score").innerHTML = score;
+
+// Increase the bug speed when the score increments
+bug.speed += 0.5;
+
+// Decrement the hopping interval
+bug.interval -= 50;
+if (bug.interval < 100) {
+bug.interval = 100;
+}
+
+// Stop and restart the bug with the new speed and hopping interval
+stopBug();
+startBug();
+}
+
+// Function to handle a click event on the canvas
+function handleClick(event) {
+// Get the position of the click relative to the canvas
+const rect = canvas.getBoundingClientRect();
+const x = event.clientX - rect.left;
+const y = event.clientY - rect.top;
+
+// Check if the click is within the bounds of the bug
+const dx = x - bug.x;
+const dy = y - bug.y;
+const distance = Math.sqrt(dx ** 2 + dy ** 2);
+if (distance <= bug.size / 2) {
+updateBug();
+}
+}
+
+// Set up event listeners for the Reset Score and Reset Speed buttons
+document.getElementById("resetScoreBtn").addEventListener("click", resetScore);
+document.getElementById("resetSpeedBtn").addEventListener("click", resetSpeed);
+
+// Start the game
+canvas.addEventListener("click", handleClick);
